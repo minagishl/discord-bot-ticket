@@ -18,6 +18,17 @@ export default {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName("with")
+        .setDescription("Create a ticket with a specific user")
+        .addUserOption((option) =>
+          option
+            .setName("user")
+            .setDescription("The user to create a ticket with")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName("delete")
         .setDescription("Delete a ticket")
         .addStringOption((option) =>
@@ -31,7 +42,67 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const subcommand = interaction.options.getSubcommand();
 
-    if (subcommand === "create") {
+    if (subcommand === "with-user") {
+      const targetUser = interaction.options.getUser("user", true);
+      // Generate a random string
+      const randomId = crypto.randomBytes(4).toString("hex");
+      const categoryName = `ticket-${randomId}`;
+
+      try {
+        // Create a category
+        const category = await interaction.guild?.channels.create({
+          name: categoryName,
+          type: ChannelType.GuildCategory,
+          permissionOverwrites: [
+            {
+              id: interaction.guild.id,
+              deny: [PermissionFlagsBits.ViewChannel],
+            },
+            {
+              id: targetUser.id,
+              allow: [PermissionFlagsBits.ViewChannel],
+            },
+            {
+              id: interaction.user.id,
+              allow: [PermissionFlagsBits.ViewChannel],
+            },
+            {
+              // Grant permissions to admin role
+              id:
+                interaction.guild.roles.cache.find((role) =>
+                  role.permissions.has(PermissionFlagsBits.Administrator)
+                )?.id || "",
+              allow: [PermissionFlagsBits.ViewChannel],
+            },
+          ],
+        });
+
+        // Create text channel
+        await interaction.guild?.channels.create({
+          name: "text",
+          type: ChannelType.GuildText,
+          parent: category?.id,
+        });
+
+        // Create voice channel
+        await interaction.guild?.channels.create({
+          name: "voice",
+          type: ChannelType.GuildVoice,
+          parent: category?.id,
+        });
+
+        await interaction.reply({
+          content: `Ticket created with ${targetUser.tag}: ${categoryName}`,
+          ephemeral: true,
+        });
+      } catch (error) {
+        console.error("Error creating ticket:", error);
+        await interaction.reply({
+          content: "An error occurred while creating the ticket.",
+          ephemeral: true,
+        });
+      }
+    } else if (subcommand === "create") {
       // Generate a random string
       const randomId = crypto.randomBytes(4).toString("hex");
       const categoryName = `ticket-${randomId}`;
