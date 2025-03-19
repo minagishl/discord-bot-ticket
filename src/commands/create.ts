@@ -42,11 +42,16 @@ export default {
       });
 
       // Create text channel
-      await interaction.guild?.channels.create({
+      const textChannel = await interaction.guild?.channels.create({
         name: "text",
         type: ChannelType.GuildText,
         parent: category?.id,
       });
+
+      // Send welcome message
+      await textChannel?.send(
+        `<@${interaction.user.id}>, we will proceed with your inquiry on this channel.`
+      );
 
       // Create voice channel
       await interaction.guild?.channels.create({
