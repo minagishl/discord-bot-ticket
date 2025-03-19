@@ -37,6 +37,9 @@ export default {
             .setDescription("The ID of the ticket to delete (e.g. 1a2b3c4d)")
             .setRequired(true)
         )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand.setName("list").setDescription("List all active tickets")
     ),
 
   async execute(interaction: ChatInputCommandInteraction) {
@@ -208,6 +211,37 @@ export default {
         } catch {
           console.error("Error sending error message");
         }
+      }
+    } else if (subcommand === "list") {
+      await interaction.deferReply({ ephemeral: true });
+
+      try {
+        const ticketCategories = interaction.guild?.channels.cache.filter(
+          (channel): channel is CategoryChannel =>
+            channel.type === ChannelType.GuildCategory &&
+            channel.name.startsWith("ticket-")
+        );
+
+        if (!ticketCategories || ticketCategories.size === 0) {
+          await interaction.editReply({
+            content: "There are no active tickets.",
+          });
+          return;
+        }
+
+        const ticketList = ticketCategories.map((category) => {
+          const ticketId = category.name.replace("ticket-", "");
+          return `- ID: \`${ticketId}\``;
+        });
+
+        await interaction.editReply({
+          content: `Active Tickets:\n${ticketList.join("\n")}`,
+        });
+      } catch (error) {
+        console.error("Error listing tickets:", error);
+        await interaction.editReply({
+          content: "An error occurred while listing the tickets.",
+        });
       }
     }
   },
