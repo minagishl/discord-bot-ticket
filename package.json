@@ -1,7 +1,7 @@
 {
-  "name": "discord-bot-logger",
+  "name": "discord-bot-ticket",
   "version": "0.1.0",
-  "description": "It sends all logs within the specified Discord server to a specific channel.",
+  "description": "It automatically creates a channel when contacting the administrator.",
   "license": "MIT",
   "author": "minagishl",
   "type": "commonjs",
