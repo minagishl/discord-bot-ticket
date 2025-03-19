@@ -42,7 +42,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const subcommand = interaction.options.getSubcommand();
 
-    if (subcommand === "with-user") {
+    if (subcommand === "with") {
       const targetUser = interaction.options.getUser("user", true);
       // Generate a random string
       const randomId = crypto.randomBytes(4).toString("hex");
