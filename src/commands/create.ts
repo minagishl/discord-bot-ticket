@@ -48,11 +48,6 @@ export default {
         parent: category?.id,
       });
 
-      // Send welcome message
-      await textChannel?.send(
-        `<@${interaction.user.id}>, we will proceed with your inquiry on this channel.`
-      );
-
       // Send and pin the ticket ID message
       const idMessage = await textChannel?.send({
         content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\n\`\`\``,
