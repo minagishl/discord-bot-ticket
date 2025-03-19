@@ -86,7 +86,7 @@ export default {
 
         // Send and pin the ticket ID message
         const idMessage = await textChannel?.send({
-          content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\nTo delete it, use /delete id:${randomId}\n\`\`\``,
+          content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\n\`\`\``,
         });
         await idMessage?.pin();
 
@@ -147,7 +147,7 @@ export default {
 
         // Send and pin the ticket ID message
         const idMessage = await textChannel?.send({
-          content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\nTo delete it, use /delete id:${randomId}\n\`\`\``,
+          content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\n\`\`\``,
         });
         await idMessage?.pin();
 
