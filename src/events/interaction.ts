@@ -24,9 +24,22 @@ export default {
         `The ${interaction.commandName} command has been executed.`
       );
     } catch (err: any) {
-      // If an error occurs, log the error and send an error message to the user
+      // If an error occurs, log the error
       console.error(err);
-      await interaction.reply("An error occurred while executing the command.");
+      try {
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction.reply({
+            content: "An error occurred while executing the command.",
+            ephemeral: true,
+          });
+        } else if (interaction.deferred) {
+          await interaction.editReply({
+            content: "An error occurred while executing the command.",
+          });
+        }
+      } catch (replyError) {
+        console.error("Error sending error response:", replyError);
+      }
     }
   },
 };

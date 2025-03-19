@@ -43,6 +43,7 @@ export default {
     const subcommand = interaction.options.getSubcommand();
 
     if (subcommand === "with") {
+      await interaction.deferReply({ ephemeral: true });
       const targetUser = interaction.options.getUser("user", true);
       // Generate a random string
       const randomId = crypto.randomBytes(4).toString("hex");
@@ -97,18 +98,17 @@ export default {
           parent: category?.id,
         });
 
-        await interaction.reply({
+        await interaction.editReply({
           content: `Ticket created with ${targetUser.tag}: ${categoryName}`,
-          ephemeral: true,
         });
       } catch (error) {
         console.error("Error creating ticket:", error);
-        await interaction.reply({
+        await interaction.editReply({
           content: "An error occurred while creating the ticket.",
-          ephemeral: true,
         });
       }
     } else if (subcommand === "create") {
+      await interaction.deferReply({ ephemeral: true });
       // Generate a random string
       const randomId = crypto.randomBytes(4).toString("hex");
       const categoryName = `ticket-${randomId}`;
@@ -158,18 +158,18 @@ export default {
           parent: category?.id,
         });
 
-        await interaction.reply({
+        await interaction.editReply({
           content: `Ticket created: ${categoryName}`,
-          ephemeral: true,
         });
       } catch (error) {
         console.error("Error creating ticket:", error);
-        await interaction.reply({
+        await interaction.editReply({
           content: "An error occurred while creating the ticket.",
-          ephemeral: true,
         });
       }
     } else if (subcommand === "delete") {
+      await interaction.deferReply({ ephemeral: true });
+
       const ticketId = interaction.options.getString("id", true);
       const category = interaction.guild?.channels.cache.find(
         (channel) =>
@@ -178,14 +178,18 @@ export default {
       ) as CategoryChannel;
 
       if (!category) {
-        await interaction.reply({
+        await interaction.editReply({
           content: `No ticket found with ID: ${ticketId}`,
-          ephemeral: true,
         });
         return;
       }
 
       try {
+        // Send deletion message before deleting channels
+        await interaction.editReply({
+          content: "Deleting ticket...",
+        });
+
         // Delete all channels in the category
         await Promise.all(
           category.children.cache.map((channel: GuildBasedChannel) =>
@@ -194,17 +198,16 @@ export default {
         );
         // Delete the category
         await category.delete();
-
-        await interaction.reply({
-          content: "Ticket deleted.",
-          ephemeral: true,
-        });
       } catch (error) {
         console.error("Error deleting ticket:", error);
-        await interaction.reply({
-          content: "An error occurred while deleting the ticket.",
-          ephemeral: true,
-        });
+        // Only try to send error message if the channel still exists
+        try {
+          await interaction.editReply({
+            content: "An error occurred while deleting the ticket.",
+          });
+        } catch {
+          console.error("Error sending error message");
+        }
       }
     }
   },
