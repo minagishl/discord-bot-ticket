@@ -12,6 +12,8 @@ export default {
     .setDescription("Create a ticket as a user"),
 
   async execute(interaction: ChatInputCommandInteraction) {
+    interaction.deferReply({ ephemeral: true });
+
     // Generate a random string
     const randomId = crypto.randomBytes(4).toString("hex");
     const categoryName = `ticket-${randomId}`;
@@ -61,15 +63,13 @@ export default {
         parent: category?.id,
       });
 
-      await interaction.reply({
+      await interaction.editReply({
         content: `Ticket created: ${categoryName}`,
-        ephemeral: true,
       });
     } catch (error) {
       console.error("Error creating ticket:", error);
-      await interaction.reply({
+      await interaction.editReply({
         content: "An error occurred while creating the ticket.",
-        ephemeral: true,
       });
     }
   },
