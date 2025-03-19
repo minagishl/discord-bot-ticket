@@ -78,11 +78,17 @@ export default {
         });
 
         // Create text channel
-        await interaction.guild?.channels.create({
+        const textChannel = await interaction.guild?.channels.create({
           name: "text",
           type: ChannelType.GuildText,
           parent: category?.id,
         });
+
+        // Send and pin the ticket ID message
+        const idMessage = await textChannel?.send({
+          content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\nTo delete it, use /delete id:${randomId}\n\`\`\``,
+        });
+        await idMessage?.pin();
 
         // Create voice channel
         await interaction.guild?.channels.create({
@@ -133,11 +139,17 @@ export default {
         });
 
         // Create text channel
-        await interaction.guild?.channels.create({
+        const textChannel = await interaction.guild?.channels.create({
           name: "text",
           type: ChannelType.GuildText,
           parent: category?.id,
         });
+
+        // Send and pin the ticket ID message
+        const idMessage = await textChannel?.send({
+          content: `The ID of this ticket is as follows:\n\`\`\`\n${randomId}\nTo delete it, use /delete id:${randomId}\n\`\`\``,
+        });
+        await idMessage?.pin();
 
         // Create voice channel
         await interaction.guild?.channels.create({
